@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Painel de Administrador</title>
+<style>
+body{
+  margin:0;
+  font-family:Arial, sans-serif;
+  background:#08111f;
+  color:white;
+}
+.container{
+  max-width:900px;
+  margin:50px auto;
+  padding:20px;
+}
+.card{
+  background:rgba(255,255,255,0.05);
+  padding:20px;
+  border-radius:12px;
+  margin-bottom:20px;
+}
+button{
+  padding:10px 20px;
+  border:none;
+  border-radius:8px;
+  background:#2563eb;
+  color:white;
+  font-weight:bold;
+  cursor:pointer;
+}
+</style>
+</head>
+
+<body>
+
+<!-- TELA DE LOGIN -->
+<div id="loginScreen" style="
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:#08111f;
+display:flex;
+align-items:center;
+justify-content:center;
+z-index:9999;
+flex-direction:column;
+color:white;
+">
+
+<h2 style="margin-bottom:20px;">🔒 Acesso Restrito</h2>
+
+<input type="password" id="senhaInput" placeholder="Digite a senha"
+style="
+padding:12px;
+border-radius:8px;
+border:none;
+margin-bottom:10px;
+width:200px;
+text-align:center;
+">
+
+<button onclick="verificarSenha()">Entrar</button>
+
+<p id="erro" style="color:red; margin-top:10px;"></p>
+
+</div>
+
+<!-- CONTEÚDO ADMIN -->
+<div class="container">
+  <div class="card">
+    <h2>Painel de Administração</h2>
+    <p>Aqui você pode gerenciar configurações do jogo.</p>
+  </div>
+
+  <div class="card">
+    <h3>Ranking</h3>
+    <button onclick="limparRanking()">Limpar Ranking</button>
+  </div>
+
+  <div class="card">
+    <h3>Navegação</h3>
+    <button onclick="window.location.href='index.html'">Voltar para Landing</button>
+    <button onclick="window.location.href='game.html'">Ir para o Jogo</button>
+  </div>
+</div>
+
+<script>
+function verificarSenha() {
+  const senha = document.getElementById("senhaInput").value;
+  const senhaCorreta = "051016";
+
+  if (senha === senhaCorreta) {
+    document.getElementById("loginScreen").style.display = "none";
+  } else {
+    document.getElementById("erro").innerText = "Senha incorreta!";
+  }
+}
+
+function limparRanking(){
+  localStorage.removeItem("ranking");
+  alert("Ranking limpo!");
+}
+</script>
+
+</body>
+</html>
