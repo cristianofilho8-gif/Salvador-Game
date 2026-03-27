@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bairros de Salvador — Landing Page</title>
+  <style>
+    :root{
+      --bg:#07111f; --bg2:#0b1630; --card:rgba(10,18,32,.72); --line:rgba(255,255,255,.08);
+      --text:#f8fafc; --muted:#bfd0e4; --accent:#60a5fa; --accent2:#22d3ee; --accent3:#8b5cf6;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; font-family:Inter,Arial,Helvetica,sans-serif; color:var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(34,211,238,.16), transparent 30%),
+        radial-gradient(circle at top right, rgba(96,165,250,.20), transparent 35%),
+        linear-gradient(180deg,#08111f 0%, #050913 100%);
+    }
+    .wrap{max-width:1240px; margin:0 auto; padding:20px}
+    .nav{
+      display:flex; justify-content:space-between; align-items:center; gap:16px;
+      padding:14px 18px; margin-bottom:22px;
+      border:1px solid var(--line); border-radius:24px; background:rgba(8,14,27,.65); backdrop-filter:blur(14px);
+    }
+    .brand{display:flex; gap:12px; align-items:center}
+    .icon{
+      width:52px; height:52px; border-radius:18px; display:grid; place-items:center; font-size:24px;
+      background:linear-gradient(180deg,#2563eb,#06b6d4); box-shadow:0 18px 34px rgba(37,99,235,.28)
+    }
+    .badge{
+      display:inline-flex; margin-top:6px; padding:6px 10px; border-radius:999px;
+      background:rgba(96,165,250,.12); border:1px solid rgba(96,165,250,.18); font-size:11px; font-weight:700; color:#dbeafe;
+    }
+    .nav-actions, .hero-actions{display:flex; gap:10px; flex-wrap:wrap}
+    .btn{
+      border:none; text-decoration:none; color:var(--text); font-weight:800; font-size:14px;
+      padding:12px 16px; border-radius:16px; background:rgba(10,18,32,.88); border:1px solid rgba(255,255,255,.08);
+      display:inline-flex; align-items:center; justify-content:center;
+    }
+    .btn.primary{background:linear-gradient(180deg,#2563eb,#1d4ed8); box-shadow:0 14px 28px rgba(37,99,235,.24)}
+    .hero{
+      display:grid; grid-template-columns:1.05fr .95fr; gap:18px; align-items:stretch;
+    }
+    .hero-copy{
+      position:relative;
+      overflow:hidden;
+    }
+    .hero-copy::after{
+      content:"";
+      position:absolute;
+      right:-80px;
+      top:-80px;
+      width:240px;
+      height:240px;
+      border-radius:999px;
+      background:radial-gradient(circle, rgba(96,165,250,.20), transparent 65%);
+      pointer-events:none;
+    }
+    .hero-art{
+      position:relative;
+      min-height:620px;
+      border-radius:32px;
+      overflow:hidden;
+      border:1px solid rgba(255,255,255,.10);
+      background:
+        linear-gradient(180deg, rgba(2,6,23,.08), rgba(2,6,23,.92)),
+        url('https://images.unsplash.com/photo-1526778548025-fa2f459cd5ce?auto=format&fit=crop&w=1400&q=80') center/cover no-repeat;
+      display:flex;
+      align-items:stretch;
+      box-shadow:0 24px 60px rgba(0,0,0,.34);
+    }
+    .hero-art::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:
+        linear-gradient(180deg, rgba(3,7,18,.10) 0%, rgba(3,7,18,.35) 38%, rgba(3,7,18,.92) 100%),
+        linear-gradient(90deg, rgba(3,7,18,.82) 0%, rgba(3,7,18,.45) 38%, rgba(3,7,18,.18) 100%);
+    }
+    .hero-art::after{
+      content:"";
+      position:absolute;
+      inset:auto 0 0 0;
+      height:38%;
+      background:linear-gradient(180deg, transparent, rgba(2,6,23,.92));
+      pointer-events:none;
+    }
+    .hero-overlay{
+      position:relative;
+      z-index:1;
+      width:100%;
+      padding:24px;
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+      gap:18px;
+    }
+    .hero-top-tag{
+      align-self:flex-start;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 12px;
+      border-radius:999px;
+      background:rgba(10,18,32,.58);
+      border:1px solid rgba(255,255,255,.12);
+      backdrop-filter:blur(10px);
+      font-size:11px;
+      font-weight:800;
+      letter-spacing:.10em;
+      text-transform:uppercase;
+      color:#dbeafe;
+    }
+    .hero-cinematic-copy{
+      max-width:560px;
+    }
+    .hero-kicker{
+      font-size:12px;
+      color:#cfe4ff;
+      text-transform:uppercase;
+      letter-spacing:.14em;
+      margin-bottom:10px;
+      font-weight:800;
+    }
+    .hero-headline{
+      font-size:56px;
+      line-height:0.98;
+      letter-spacing:-.05em;
+      font-weight:900;
+      margin:0 0 14px;
+      text-shadow:0 10px 30px rgba(0,0,0,.34);
+    }
+    .hero-subcopy{
+      font-size:16px;
+      line-height:1.75;
+      color:#d6e4f5;
+      max-width:520px;
+      text-shadow:0 8px 24px rgba(0,0,0,.24);
+    }
+    .hero-cta-row{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:18px;
+    }
+    .hero-cta-row .btn{
+      padding:14px 18px;
+      font-size:15px;
+    }
+    .hero-glass{
+      border-radius:24px;
+      background:rgba(8,14,27,.68);
+      border:1px solid rgba(255,255,255,.10);
+      backdrop-filter:blur(12px);
+      padding:18px;
+    }
+    .photo-strip{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+    }
+    .photo-card{
+      min-height:180px;
+      border-radius:22px;
+      overflow:hidden;
+      border:1px solid rgba(255,255,255,.10);
+      position:relative;
+      background-size:cover;
+      background-position:center;
+    }
+    .photo-card::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:linear-gradient(180deg, rgba(3,7,18,.10), rgba(3,7,18,.62));
+    }
+    .photo-card::before{
+      position:absolute;
+      left:12px;
+      bottom:12px;
+      z-index:2;
+      padding:6px 10px;
+      border-radius:999px;
+      background:rgba(8,14,27,.66);
+      border:1px solid rgba(255,255,255,.10);
+      backdrop-filter:blur(10px);
+      font-size:10px;
+      font-weight:800;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      color:#dbeafe;
+    }
+    .photo-card.one{
+      background-image:url('https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=800&q=80');
+    }
+    .photo-card.two{
+      background-image:url('https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=800&q=80');
+    }
+    .feature-grid{
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:10px;
+      margin-top:18px;
+    }
+    .feature-tile{
+      padding:14px;
+      border-radius:20px;
+      background:rgba(255,255,255,.05);
+      border:1px solid rgba(255,255,255,.08);
+    }
+    .feature-kicker{
+      font-size:11px;
+      color:#dbeafe;
+      text-transform:uppercase;
+      letter-spacing:.10em;
+      margin-bottom:6px;
+    }
+    .card{
+      border:1px solid var(--line); border-radius:30px; background:var(--card);
+      backdrop-filter:blur(16px); padding:28px; box-shadow:0 24px 60px rgba(0,0,0,.28);
+    }
+    h1{font-size:56px; line-height:1.02; letter-spacing:-.04em; margin:0 0 16px}
+    .lead{font-size:17px; color:var(--muted); line-height:1.7; margin-bottom:20px}
+    .chips{display:flex; gap:10px; flex-wrap:wrap; margin:18px 0 22px}
+    .chip{
+      border:1px solid rgba(255,255,255,.08); background:rgba(255,255,255,.05);
+      padding:8px 12px; border-radius:999px; font-size:13px; color:#dbeafe;
+    }
+    .phone{
+      height:100%; min-height:460px; border-radius:32px; border:1px solid rgba(255,255,255,.10);
+      background:
+        radial-gradient(circle at top, rgba(96,165,250,.18), transparent 34%),
+        linear-gradient(180deg, rgba(9,15,28,.98), rgba(5,9,19,.98));
+      padding:20px; display:flex; flex-direction:column; justify-content:space-between;
+    }
+    .screen{
+      border-radius:24px; background:linear-gradient(180deg, rgba(17,27,46,.8), rgba(8,14,27,.92));
+      border:1px solid rgba(255,255,255,.08); padding:18px;
+    }
+    .mini-map{
+      height:220px; border-radius:22px; background:
+        radial-gradient(circle at top, rgba(34,211,238,.14), transparent 35%),
+        linear-gradient(180deg,#0c1a33,#050913);
+      border:1px solid rgba(255,255,255,.06);
+      display:grid; place-items:center; color:#dbeafe; font-weight:800; letter-spacing:.06em;
+    }
+    .stats{display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:14px}
+    .stat{
+      background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.08); border-radius:18px; padding:12px; text-align:center;
+    }
+    .stat b{display:block; font-size:22px; margin-top:4px}
+    .sections{display:grid; grid-template-columns:repeat(3,1fr); gap:18px; margin-top:18px}
+    h2{margin:0 0 10px; font-size:24px; letter-spacing:-.03em}
+    .muted{color:var(--muted)}
+    ul{margin:0; padding-left:18px; color:var(--muted); line-height:1.7}
+    .footer{margin-top:18px; text-align:center; color:var(--muted); font-size:13px}
+    @media (max-width:980px){
+      .hero,.sections{grid-template-columns:1fr}
+      h1{font-size:40px}
+      .hero-headline{font-size:40px}
+      .hero-art{min-height:540px}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="nav">
+      <div class="brand">
+        <div class="icon">🗺️</div>
+        <div>
+          <div id="landingTitleNav" style="font-size:20px;font-weight:900;letter-spacing:-.03em;">Bairros de Salvador</div>
+          <div class="badge" id="landingBadge">SALVADOR MAP QUIZ</div>
+        </div>
+      </div>
+      <div class="nav-actions">
+        <a class="btn" href="admin.html">Painel admin</a>
+        <a class="btn primary" href="game.html">Jogar agora</a>
+      </div>
+    </div>
+
+    
+    <div class="hero">
+<div class="card hero-copy">
+        <div style="font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#cfe4ff;margin-bottom:10px;">Jogo de geografia</div>
+        <h1 id="landingTitle">Bairros de Salvador</h1>
+        <div class="lead" id="landingSubtitle">Aprenda, memorize e compita descobrindo os bairros de Salvador em um jogo rápido, visual e viciante.</div>
+        <div class="chips">
+          <div class="chip">visual estilo game</div>
+          <div class="chip">163 bairros</div>
+          <div class="chip">Ranking local</div>
+          <div class="chip">Fácil, médio e difícil</div>
+          <div class="chip">Modo estudo</div>
+        </div>
+        <div class="feature-grid">
+          <div class="feature-tile">
+            <div class="feature-kicker">desafio</div>
+            <div>Descubra o bairro certo antes do tempo acabar.</div>
+          </div>
+          <div class="feature-tile">
+            <div class="feature-kicker">competição</div>
+            <div>Suba no ranking com multiplicadores por dificuldade.</div>
+          </div>
+          <div class="feature-tile">
+            <div class="feature-kicker">aprendizado</div>
+            <div>Use o modo estudo para memorizar o mapa de Salvador.</div>
+          </div>
+          <div class="feature-tile">
+            <div class="feature-kicker">ritmo rápido</div>
+            <div>Uma rodada atrás da outra, com sensação de app de jogo.</div>
+          </div>
+        </div>
+        <div class="hero-actions" style="margin-top:22px;">
+          <a class="btn primary" href="game.html" id="landingCta">Jogar agora</a>
+          <a class="btn" href="admin.html">Abrir painel de administrador</a>
+        </div>
+      </div>
+
+      <div class="hero-art">
+        <div class="hero-overlay">
+          <div class="hero-top-tag">modo competitivo • mapa • memória</div>
+
+          <div class="hero-cinematic-copy">
+            <div class="hero-kicker">Uma experiência de geografia em ritmo de jogo</div>
+            <h2 class="hero-headline">Descubra Salvador bairro por bairro.</h2>
+            <div class="hero-subcopy">Treine sua memória visual, compita no ranking e mergulhe em uma experiência de mapa com clima cinematográfico. Acerte rápido, suba de dificuldade e transforme conhecimento da cidade em pontuação.</div>
+            <div class="hero-cta-row">
+              <a class="btn primary" href="game.html">Jogar agora</a>
+              <a class="btn" href="admin.html">Painel admin</a>
+            </div>
+          </div>
+
+          <div class="photo-strip">
+            <div class="photo-card one"></div>
+            <div class="photo-card two"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+          <div class="photo-strip">
+            <div class="photo-card one"></div>
+            <div class="photo-card two"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+        </div>
+        <div class="screen">
+          <div style="font-size:18px;font-weight:800;margin-bottom:8px;">Como funciona</div>
+          <div class="muted" id="landingHow">O jogo sorteia um bairro e você precisa clicar na área correta do mapa. Quanto maior a dificuldade, maior o multiplicador da pontuação.</div>
+        </div>
+      </div>
+    </div>
+
+    
+    <div class="sections">
+      <div class="card">
+        <h2>Aprenda jogando</h2>
+        <ul>
+          <li>Treine localização e vizinhança dos bairros.</li>
+          <li>Use o modo estudo para memorizar o mapa.</li>
+          <li>Descubra padrões e regiões visualmente.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h2>Competição</h2>
+        <ul>
+          <li>Salve sua pontuação no ranking.</li>
+          <li>Veja dificuldade e tempo usados em cada score.</li>
+          <li>Tente subir de posição com modos mais difíceis.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h2>Controle total</h2>
+        <ul>
+          <li>Altere textos do jogo no painel admin.</li>
+          <li>Defina multiplicadores por dificuldade.</li>
+          <li>Limpe o ranking quando quiser.</li>
+        </ul>
+      </div>
+    </div>
+
+    
+    <div class="card" style="margin-top:18px; text-align:center; background:linear-gradient(180deg, rgba(20,35,60,.88), rgba(8,14,27,.88));">
+      <h2 style="font-size:32px;">Pronto para testar seu conhecimento?</h2>
+      <div class="muted" style="margin-bottom:16px;">Entre no jogo agora e veja até onde você consegue chegar.</div>
+      <a class="btn primary" href="game.html" style="font-size:18px; padding:16px 22px;">🚀 Jogar agora</a>
+    </div>
+
+<div class="footer">Use a landing page para apresentar o jogo, o game para jogar e o painel admin para personalizar tudo.</div>
+  </div>
+
+  <script>
+    const APP_STORAGE_KEY = "salvador_map_quiz_settings_v1";
+    const DEFAULT_APP_SETTINGS = {
+      landingTitle: "Bairros de Salvador",
+      landingSubtitle: "Aprenda, memorize e compita descobrindo os bairros de Salvador em um jogo rápido, visual e viciante.",
+      gameTitle: "Bairros de Salvador",
+      gameSubtitle: "Jogo de mapa interativo",
+      brandBadge: "SALVADOR MAP QUIZ",
+      gameDescription: "Teste seus conhecimentos de geografia urbana local clicando no bairro correto dentro do mapa oficial vetorizado de Salvador. O jogo foi feito para estudar localização, forma e vizinhança dos bairros de um jeito visual e prático.",
+      mapHint: "Explore o mapa, ajuste o zoom e toque no bairro correto.",
+      emptyTitle: "Pronto para jogar?",
+      emptyCopy: "Abra o mapa, receba o bairro sorteado e tente marcar o local certo antes de errar 3 vezes ou acabar o tempo.",
+      startButtonText: "Começar jogo",
+      scoreMultiplierEasy: 0.5,
+      scoreMultiplierMedium: 1,
+      scoreMultiplierHard: 2
+    };
+    function loadAppSettings() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(APP_STORAGE_KEY) || "{}");
+        return { ...DEFAULT_APP_SETTINGS, ...saved };
+      } catch (e) {
+        return { ...DEFAULT_APP_SETTINGS };
+      }
+    }
+    const settings = loadAppSettings();
+    document.getElementById("landingTitle").textContent = settings.landingTitle;
+    document.getElementById("landingTitleNav").textContent = settings.landingTitle;
+    document.getElementById("landingSubtitle").textContent = settings.landingSubtitle;
+    document.getElementById("landingBadge").textContent = settings.brandBadge;
+  </script>
+</body>
+</html>
