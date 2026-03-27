@@ -1,6 +1,16 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+  <script>
+  const senhaCorreta = "051016";
+
+  let senha = prompt("Digite a senha para acessar o painel:");
+
+  if (senha !== senhaCorreta) {
+    alert("Acesso negado!");
+    window.location.href = "index.html";
+  }
+</script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Painel de Administrador — Bairros de Salvador</title>
