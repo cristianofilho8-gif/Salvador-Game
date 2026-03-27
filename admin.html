@@ -1,16 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <script>
-  const senhaCorreta = "051016";
-
-  let senha = prompt("Digite a senha para acessar o painel:");
-
-  if (senha !== senhaCorreta) {
-    alert("Acesso negado!");
-    window.location.href = "index.html";
-  }
-</script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Painel de Administrador — Bairros de Salvador</title>
@@ -74,6 +64,61 @@
   </style>
 </head>
 <body>
+
+<div id="loginScreen" style="
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:#08111f;
+display:flex;
+align-items:center;
+justify-content:center;
+z-index:9999;
+flex-direction:column;
+color:white;
+">
+
+<h2 style="margin-bottom:20px;">🔒 Acesso Restrito</h2>
+
+<input type="password" id="senhaInput" placeholder="Digite a senha"
+style="
+padding:12px;
+border-radius:8px;
+border:none;
+margin-bottom:10px;
+width:200px;
+text-align:center;
+">
+
+<button onclick="verificarSenha()" style="
+padding:10px 20px;
+border:none;
+border-radius:8px;
+background:#2563eb;
+color:white;
+font-weight:bold;
+">
+Entrar
+</button>
+
+<p id="erro" style="color:red; margin-top:10px;"></p>
+
+</div>
+
+<script>
+function verificarSenha() {
+  const senha = document.getElementById("senhaInput").value;
+  const senhaCorreta = "051016";
+
+  if (senha === senhaCorreta) {
+    document.getElementById("loginScreen").style.display = "none";
+  } else {
+    document.getElementById("erro").innerText = "Senha incorreta!";
+  }
+}
+</script>
   <div class="wrap">
     <div class="topbar">
       <div class="brand">
