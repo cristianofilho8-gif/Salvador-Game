@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0f766e" />
+  <title>Controle de Van</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <button id="btnBack" class="icon-btn hidden" type="button" aria-label="Voltar">‹</button>
+      <div>
+        <h1 id="screenTitle">Controle de Van</h1>
+        <p id="screenSubtitle">Controle rápido de passageiros, pagamentos e fotos</p>
+      </div>
+    </header>
+
+    <main>
+      <section id="homeScreen" class="screen active">
+        <div class="hero-card">
+          <div class="van-icon">🚐</div>
+          <h2>Controle de Van</h2>
+          <p>App local para cobradores controlarem viagem, pagamentos e fotos obrigatórias.</p>
+        </div>
+
+        <div id="activeTripCard" class="card hidden"></div>
+
+        <div class="action-stack">
+          <button id="btnNewTrip" class="btn primary big" type="button">Nova Viagem</button>
+          <button id="btnHistory" class="btn secondary big" type="button">Histórico</button>
+          <button id="btnAdmin" class="btn ghost big" type="button">Área do Administrador</button>
+        </div>
+      </section>
+
+      <section id="newTripScreen" class="screen">
+        <div class="card">
+          <h2>Identificação da van</h2>
+          <p class="muted">Cada viagem precisa ficar vinculada a um cadastro de cobrador/motorista e número da van.</p>
+          <label class="field">
+            <span>Cobrador / van</span>
+            <select id="tripDriverSelect"></select>
+          </label>
+          <p class="muted tiny">Cadastre pessoas e vans na Área do Administrador. O relatório final grava esses dados.</p>
+        </div>
+
+        <div class="card">
+          <h2>Escolha o sentido da viagem</h2>
+          <p class="muted">Essa informação será usada no relatório, nos pontos de foto, no Luso e na estimativa de rota.</p>
+          <div class="choice-grid">
+            <button class="btn primary big" data-start-direction="ida" type="button">Ida</button>
+            <button class="btn primary big" data-start-direction="volta" type="button">Volta</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="tripScreen" class="screen">
+        <div id="tripStatus" class="status-line"></div>
+
+        <div class="card compact">
+          <div class="section-title-row">
+            <h2>Passageiros</h2>
+            <span id="tripDirectionBadge" class="badge"></span>
+          </div>
+          <div class="stats-grid" id="passengerStats"></div>
+
+          <h3>Adicionar passageiros</h3>
+          <div id="addPassengerButtons" class="quick-grid positive"></div>
+
+          <h3>Corrigir erro</h3>
+          <div id="removePassengerButtons" class="quick-grid negative"></div>
+        </div>
+
+        <div class="card compact">
+          <div class="section-title-row">
+            <h2>Pagamentos</h2>
+            <span id="paymentDiffBadge" class="badge"></span>
+          </div>
+          <div class="stats-grid" id="paymentStats"></div>
+
+          <h3>Passagem inteira</h3>
+          <div class="payment-grid">
+            <button class="btn money" data-payment="cashFull" data-delta="1" type="button">+1 dinheiro</button>
+            <button class="btn pix" data-payment="pixFull" data-delta="1" type="button">+1 Pix</button>
+            <button class="btn danger-outline" data-payment="cashFull" data-delta="-1" type="button">-1 dinheiro</button>
+            <button class="btn danger-outline" data-payment="pixFull" data-delta="-1" type="button">-1 Pix</button>
+          </div>
+
+          <h3>Trecho Luso</h3>
+          <div class="payment-grid">
+            <button class="btn money" data-payment="cashLuso" data-delta="1" type="button">+1 Luso dinheiro</button>
+            <button class="btn pix" data-payment="pixLuso" data-delta="1" type="button">+1 Luso Pix</button>
+            <button class="btn danger-outline" data-payment="cashLuso" data-delta="-1" type="button">-1 Luso dinheiro</button>
+            <button class="btn danger-outline" data-payment="pixLuso" data-delta="-1" type="button">-1 Luso Pix</button>
+          </div>
+        </div>
+
+        <div class="card compact">
+          <h2>Ações da viagem</h2>
+          <div class="action-grid">
+            <button id="btnOpenLuso" class="btn warning big" type="button">Registrar Luso</button>
+            <button id="btnRefreshGps" class="btn secondary big" type="button">Atualizar GPS</button>
+          </div>
+          <div id="gpsStatus" class="gps-box"></div>
+        </div>
+
+        <div id="pendingPhotosCard" class="card compact hidden">
+          <div class="section-title-row">
+            <h2>Fotos pendentes</h2>
+            <span class="badge danger">Atenção</span>
+          </div>
+          <div id="pendingPhotosList"></div>
+        </div>
+
+        <div id="photoSummaryCard" class="card compact"></div>
+
+        <div class="footer-actions">
+          <button id="btnEndTrip" class="btn danger big" type="button">Encerrar Viagem</button>
+        </div>
+      </section>
+
+      <section id="historyScreen" class="screen">
+        <div class="card compact">
+          <div class="section-title-row">
+            <h2>Histórico de viagens</h2>
+            <button id="btnClearHistory" class="btn danger-outline small" type="button">Limpar histórico</button>
+          </div>
+          <div id="historyList" class="list"></div>
+        </div>
+      </section>
+
+      <section id="reportScreen" class="screen">
+        <div id="reportContent" class="report"></div>
+        <div class="card compact report-actions-card">
+          <div class="section-title-row">
+            <h2>Ações do relatório</h2>
+            <span id="reportSaveStatus" class="badge warn">Aguardando</span>
+          </div>
+          <p class="muted">Depois de conferir o resumo, salve a viagem no histórico. Você também pode exportar em JSON ou PDF.</p>
+          <div class="action-grid">
+            <button id="btnSaveTripReport" class="btn primary" type="button">Salvar viagem</button>
+            <button id="btnExportReport" class="btn secondary" type="button">Exportar JSON</button>
+            <button id="btnExportPdf" class="btn ghost" type="button">Exportar PDF</button>
+            <button id="btnCopyReport" class="btn ghost hidden" type="button">Copiar JSON</button>
+          </div>
+          <textarea id="exportText" class="export-box hidden" readonly></textarea>
+        </div>
+      </section>
+
+      <section id="adminLoginScreen" class="screen">
+        <div class="card">
+          <h2>Área do Administrador</h2>
+          <p class="muted">Digite o PIN administrativo para configurar valores, pontos e relatórios.</p>
+          <label class="field">
+            <span>PIN</span>
+            <input id="adminPinInput" type="password" inputmode="numeric" autocomplete="current-password" placeholder="Digite o PIN" />
+          </label>
+          <button id="btnAdminLogin" class="btn primary big" type="button">Entrar</button>
+          <p class="muted tiny">PIN padrão inicial: 1234. Em produção, use autenticação em servidor.</p>
+        </div>
+      </section>
+
+      <section id="adminScreen" class="screen">
+        <div class="card compact">
+          <div class="section-title-row">
+            <h2>Configurações</h2>
+            <button id="btnAdminLogout" class="btn ghost small" type="button">Sair</button>
+          </div>
+          <div class="form-grid two">
+            <label class="field">
+              <span>Passagem inteira (R$)</span>
+              <input id="fareFullInput" type="number" min="0" step="0.01" />
+            </label>
+            <label class="field">
+              <span>Passagem Luso (R$)</span>
+              <input id="fareLusoInput" type="number" min="0" step="0.01" />
+            </label>
+            <label class="field">
+              <span>Duração média da rota (min)</span>
+              <input id="routeDurationInput" type="number" min="5" step="1" />
+            </label>
+            <label class="field">
+              <span>Chave Google Maps opcional</span>
+              <input id="googleMapsKeyInput" type="text" placeholder="Opcional: usada em versões com API Google" />
+            </label>
+          </div>
+          <button id="btnSaveFares" class="btn primary" type="button">Salvar valores</button>
+        </div>
+
+        <div class="card compact">
+          <h2>Cadastro de cobradores e vans</h2>
+          <input id="driverIdInput" type="hidden" />
+          <div class="form-grid">
+            <label class="field"><span>Nome da pessoa</span><input id="driverNameInput" type="text" placeholder="Ex.: João" /></label>
+            <label class="field"><span>Número da van</span><input id="driverVanInput" type="text" placeholder="Ex.: Van 12" /></label>
+            <label class="field"><span>Telefone / observação</span><input id="driverNoteInput" type="text" placeholder="Opcional" /></label>
+          </div>
+          <div class="action-grid">
+            <button id="btnSaveDriver" class="btn primary" type="button">Salvar cadastro</button>
+            <button id="btnCancelDriverEdit" class="btn ghost hidden" type="button">Cancelar edição</button>
+          </div>
+          <div id="driversList" class="list"></div>
+        </div>
+
+        <div class="card compact">
+          <h2>Pontos obrigatórios de foto</h2>
+          <input id="pointIdInput" type="hidden" />
+          <div class="form-grid">
+            <label class="field"><span>Nome do ponto</span><input id="pointNameInput" type="text" placeholder="Ex.: Terminal" /></label>
+            <label class="field"><span>Latitude</span><input id="pointLatInput" type="number" step="any" placeholder="-12.9714" /></label>
+            <label class="field"><span>Longitude</span><input id="pointLngInput" type="number" step="any" placeholder="-38.5014" /></label>
+            <label class="field"><span>Raio de tolerância (m)</span><input id="pointRadiusInput" type="number" min="1" step="1" value="80" /></label>
+            <label class="field"><span>Ordem no trajeto</span><input id="pointOrderInput" type="number" min="1" step="1" value="1" /></label>
+            <label class="field"><span>Sentido</span>
+              <select id="pointDirectionInput">
+                <option value="both">Ambos</option>
+                <option value="ida">Ida</option>
+                <option value="volta">Volta</option>
+              </select>
+            </label>
+            <label class="check-field"><input id="pointRequiredInput" type="checkbox" checked /> <span>Obrigatório</span></label>
+          </div>
+          <div class="action-grid">
+            <button class="btn secondary" data-open-map="point" type="button">Escolher no mapa</button>
+            <button id="btnUseCurrentForPoint" class="btn ghost" type="button">Usar meu GPS atual</button>
+            <button id="btnSavePoint" class="btn primary" type="button">Salvar ponto</button>
+            <button id="btnCancelPointEdit" class="btn ghost hidden" type="button">Cancelar edição</button>
+          </div>
+          <div id="pointsList" class="list"></div>
+        </div>
+
+        <div class="card compact">
+          <h2>Ponto Luso</h2>
+          <div class="form-grid">
+            <label class="field"><span>Nome</span><input id="lusoNameInput" type="text" placeholder="Luso" /></label>
+            <label class="field"><span>Latitude</span><input id="lusoLatInput" type="number" step="any" /></label>
+            <label class="field"><span>Longitude</span><input id="lusoLngInput" type="number" step="any" /></label>
+            <label class="field"><span>Raio de tolerância (m)</span><input id="lusoRadiusInput" type="number" min="1" step="1" /></label>
+          </div>
+          <div class="action-grid">
+            <button class="btn secondary" data-open-map="luso" type="button">Escolher Luso no mapa</button>
+            <button id="btnUseCurrentForLuso" class="btn ghost" type="button">Usar meu GPS atual</button>
+            <button id="btnSaveLusoPoint" class="btn primary" type="button">Salvar ponto Luso</button>
+          </div>
+        </div>
+
+        <div class="card compact">
+          <div class="section-title-row">
+            <h2>Painel das vans</h2>
+            <button id="btnRefreshFleetPanel" class="btn secondary small" type="button">Atualizar</button>
+          </div>
+          <p class="muted tiny">Nesta versão local, o painel usa dados gravados neste aparelho. Com GPS ligado mostra posição real; sem GPS, estima pela rota, horários e último ponto registrado. Cada alfinete tem link para abrir no Google Maps.</p>
+          <div id="fleetMap" class="fleet-map" aria-label="Mapa visual das vans"></div>
+          <div id="fleetMapStatus" class="gps-box"></div>
+          <div id="vanLocationsPanel" class="list"></div>
+        </div>
+
+        <div class="card compact">
+          <h2>Relatórios administrativos</h2>
+          <div id="adminReportsList" class="list"></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
+
+  <div id="lusoModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="lusoModalTitle">
+    <div class="modal-card">
+      <div class="section-title-row">
+        <h2 id="lusoModalTitle">Registrar Luso</h2>
+        <button class="icon-btn" data-close-modal="lusoModal" type="button">×</button>
+      </div>
+      <p id="lusoHelp" class="muted"></p>
+      <div class="form-grid">
+        <label class="field"><span id="lusoPeopleLabel">Quantidade de pessoas</span><input id="lusoPeopleInput" type="number" min="0" step="1" value="0" inputmode="numeric" /></label>
+        <label class="field"><span>Pagaram em dinheiro</span><input id="lusoCashInput" type="number" min="0" step="1" value="0" inputmode="numeric" /></label>
+        <label class="field"><span>Pagaram em Pix</span><input id="lusoPixInput" type="number" min="0" step="1" value="0" inputmode="numeric" /></label>
+      </div>
+      <button id="btnSaveLusoEvent" class="btn warning big" type="button">Salvar Luso</button>
+    </div>
+  </div>
+
+  <div id="photoModal" class="modal modal-photo hidden" role="dialog" aria-modal="true" aria-labelledby="photoModalTitle">
+    <div class="modal-card">
+      <div class="section-title-row">
+        <h2 id="photoModalTitle">Foto obrigatória</h2>
+        <button class="icon-btn" data-close-modal="photoModal" type="button">×</button>
+      </div>
+      <div class="photo-alarm-icon">📸</div>
+      <p id="photoModalText" class="alert-text urgent-photo"></p>
+      <div id="photoModalMeta" class="meta-box"></div>
+      <label class="file-button file-button-large">
+        <span>Tirar Foto Agora</span>
+        <input id="photoInput" type="file" accept="image/*" capture="environment" />
+      </label>
+      <p class="muted tiny">O app solicita câmera traseira. Alguns navegadores ainda podem permitir galeria; por isso o GPS, horário e distância são registrados automaticamente.</p>
+    </div>
+  </div>
+
+  <div id="mapModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="mapModalTitle">
+    <div class="modal-card map-modal-card">
+      <div class="section-title-row">
+        <h2 id="mapModalTitle">Escolher ponto no mapa</h2>
+        <button class="icon-btn" data-close-modal="mapModal" type="button">×</button>
+      </div>
+      <p class="muted">Toque no mapa para colocar o alfinete. Depois confirme para preencher latitude e longitude.</p>
+      <div id="mapPicker" class="map-picker"></div>
+      <div id="mapPickerStatus" class="gps-box"></div>
+      <div class="action-grid">
+        <button id="btnMapUseCurrent" class="btn ghost" type="button">Usar meu GPS atual</button>
+        <button id="btnConfirmMapPoint" class="btn primary" type="button">Confirmar ponto</button>
+      </div>
+      <p class="muted tiny">O mapa usa OpenStreetMap/Leaflet via internet. Se estiver offline, preencha latitude e longitude manualmente ou use o GPS atual.</p>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
